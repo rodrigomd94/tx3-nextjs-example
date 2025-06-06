@@ -19,7 +19,11 @@ function generateBindings() {
   // Try to find trix in common locations
   const trixPaths = [
     'trix', // Check if it's in PATH first
-    '/root/.tx3/stable/bin/trix', // Corrected location
+    `${process.env.HOME}/.tx3/stable/bin/trix`, // User home directory
+    `${process.env.HOME}/.cargo/bin/trix`,
+    '/vercel/.tx3/stable/bin/trix', // Vercel environment
+    '/vercel/.cargo/bin/trix',
+    '/root/.tx3/stable/bin/trix', // Root location (for Docker)
     '/root/.cargo/bin/trix' 
   ];
   

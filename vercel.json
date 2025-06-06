@@ -1,3 +1,5 @@
 {
-  "buildCommand": "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && source ~/.bashrc && tx3up && node scripts/generate-tx3.mjs && pnpm build"
+  "buildCommand": "bash scripts/install-tx3-vercel.sh && pnpm build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
 }
