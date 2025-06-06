@@ -17,6 +17,8 @@ RUN npm install -g pnpm
 # Copy package files
 COPY package.json pnpm-lock.yaml* ./
 
+# Set NODE_ENV to ensure devDependencies are installed
+ENV NODE_ENV=development
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
@@ -104,8 +106,11 @@ RUN mkdir -p node_modules/.tx3
 # Build the application
 RUN pnpm build
 
-# Set environment to production
+# Set environment to production for runtime
 ENV NODE_ENV=production
+
+# Prune devDependencies for a smaller production image
+RUN pnpm prune --prod
 
 # Start the production server
 CMD ["pnpm", "start"]
