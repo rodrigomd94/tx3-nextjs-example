@@ -13,7 +13,7 @@ import { Copy, Loader2, CheckCircle, AlertCircle, Zap } from "lucide-react";
 
 export default function TestTx3() {
   const [isLoading, setIsLoading] = useState(false);
-  const [txResult, setTxResult] = useState<any>(null);
+  const [txResult, setTxResult] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -23,7 +23,7 @@ export default function TestTx3() {
   const onClick = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    setTxResult(null);
+    setTxResult("");
 
     try {
       const tx = await simpleTxProtocol.transferTx({
@@ -32,7 +32,7 @@ export default function TestTx3() {
         quantity: 1000000, // 1 ADA in lovelace
       });
 
-      setTxResult(tx);
+      setTxResult(tx.tx);
       console.log("Transaction CBOR:", tx);
     } catch (error) {
       console.error("Error resolving tx:", error);
