@@ -6,7 +6,7 @@
     "tx3:generate": "node scripts/generate-tx3.mjs",
     "watch:tx3": "nodemon --watch tx3 --ext tx3 --exec \"pnpm tx3:generate\"",
     "dev": "concurrently \"next dev\" \"pnpm watch:tx3\"",
-    "build": "pnpm tx3:generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
