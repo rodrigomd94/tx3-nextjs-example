@@ -14,7 +14,7 @@ dist
 build
 
 # Environment files
-.env
+# .env - Allow .env file to be copied to Docker
 .env.local
 .env.development.local
 .env.test.local

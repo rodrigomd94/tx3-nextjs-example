@@ -1,57 +1,37 @@
 # Use the official Node.js image as base
 FROM node:20-slim AS base
 
-# Install dependencies only when needed
-FROM base AS deps
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
     xz-utils \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-
-# Install pnpm
+# Install pnpm globally
 RUN npm install -g pnpm
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
-
-# Set NODE_ENV to ensure devDependencies are installed
-ENV NODE_ENV=development
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+WORKDIR /app
 
 # Development image
 FROM base AS dev
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    bash \
-    xz-utils \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Install pnpm
-RUN npm install -g pnpm
 
 # Set PATH to include default cargo and tx3 bin directories
 ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
 
-# Install tx3up and trix (using default paths)
+# Install tx3up and trix
 RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
-    echo "Running tx3up..." && \
     tx3up && \
-    echo "Checking for trix in $HOME/.tx3/stable/bin..." && \
-    ls -la $HOME/.tx3/stable/bin && \
-    echo "Running 'which trix'..." && \
-    which trix || echo "trix not found in PATH after install (dev stage)"
+    which trix || echo "trix not found in PATH after install"
 
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
 
-# Copy source code
+# Install all dependencies (including dev dependencies for development)
+RUN pnpm install --frozen-lockfile
+
+# Copy source code and environment file
 COPY . .
 
 # Use Docker-specific trix configuration
@@ -63,38 +43,31 @@ RUN mkdir -p node_modules/.tx3
 # Set environment to development
 ENV NODE_ENV=development
 
+# Expose port
+EXPOSE 3000
+
 # Start the development server
 CMD ["pnpm", "dev"]
 
-# Production image
-FROM base AS runner
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+# Production dependencies stage
+FROM base AS prod-deps
 
-WORKDIR /app
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
 
-# Set PATH to include default cargo and tx3 bin directories (consistent with dev stage)
-ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
+# Production build stage
+FROM base AS builder
 
-# Install tx3up and trix for production builds (using default paths)
-RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
-    echo "Running tx3up..." && \
-    tx3up && \
-    echo "Checking for trix in $HOME/.tx3/stable/bin..." && \
-    ls -la $HOME/.tx3/stable/bin && \
-    echo "Running 'which trix'..." && \
-    which trix || echo "trix not found in PATH after install (runner stage)"
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
 
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+# Install all dependencies (needed for build)
+RUN pnpm install --frozen-lockfile
 
-# Copy source code
+# Copy source code and environment file
 COPY . .
 
 # Use Docker-specific trix configuration
@@ -103,14 +76,48 @@ RUN cp tx3/trix.docker.toml tx3/trix.toml
 # Create the output directory for tx3 bindings
 RUN mkdir -p node_modules/.tx3
 
+# Set PATH to include default cargo and tx3 bin directories
+ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
+
+# Install tx3up and trix for build
+RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
+    tx3up
+
 # Build the application
 RUN pnpm build
 
-# Set environment to production for runtime
+# Production runtime stage
+FROM base AS runner
+
+# Set PATH to include default cargo and tx3 bin directories
+ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
+
+# Install tx3up and trix for runtime
+RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
+    tx3up
+
+# Copy package.json for runtime
+COPY package.json ./
+
+# Copy production dependencies
+COPY --from=prod-deps /app/node_modules ./node_modules
+
+# Copy built application
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
+# Copy environment file
+COPY --from=builder /app/.env ./.env
+
+# Copy tx3 configuration and bindings
+COPY --from=builder /app/tx3 ./tx3
+COPY --from=builder /app/node_modules/.tx3 ./node_modules/.tx3
+
+# Set environment to production
 ENV NODE_ENV=production
 
-# Prune devDependencies for a smaller production image
-RUN pnpm prune --prod
+# Expose port
+EXPOSE 3000
 
 # Start the production server
 CMD ["pnpm", "start"]

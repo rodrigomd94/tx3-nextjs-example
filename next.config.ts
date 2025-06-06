@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbo: {
       resolveAlias: {
-        '@tx3': './node_modules/.tx3',
+        '@tx3': './tx3/bindings',
       },
     },
   },
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     // Add alias for @tx3
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@tx3': './node_modules/.tx3',
+      '@tx3': './tx3/bindings',
     };
 
     // Configure webpack to handle TypeScript files in .tx3 directory
