@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  dolos:
+    build:
+      context: .
+      dockerfile: Dockerfile.dolos
+    container_name: tx3-dolos
+    ports:
+      - "8164:8164"
+    volumes:
+      - ./devnet:/app/devnet
+    networks:
+      - tx3-network
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: tx3-nextjs
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+      - /app/tx3/trix.toml
+    depends_on:
+      - dolos
+    networks:
+      - tx3-network
+    restart: unless-stopped
+
+networks:
+  tx3-network:
+    driver: bridge
