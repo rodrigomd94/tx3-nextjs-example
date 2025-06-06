@@ -182,7 +182,7 @@ export default function TestTx3() {
               {!txResult && !error && !isLoading && (
                 <div className="text-center py-8 text-muted-foreground">
                   <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Click "Generate TX3 Transaction" to see the result</p>
+                  <p>Click &quot;Generate TX3 Transaction&quot; to see the result</p>
                 </div>
               )}
             </CardContent>
