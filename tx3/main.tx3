@@ -2,6 +2,7 @@ party Sender;
 
 party Receiver;
 
+
 tx transfer(
     quantity: Int
 ) {
