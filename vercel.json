@@ -1,5 +1,0 @@
-{
-  "buildCommand": "bash scripts/install-tx3-vercel.sh && pnpm build",
-  "installCommand": "pnpm install",
-  "framework": "nextjs"
-}
