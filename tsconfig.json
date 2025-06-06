@@ -20,8 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@tx3/*": ["./node_modules/.tx3/*"],
-      "@tx3": ["./node_modules/.tx3"]
+      "@tx3/*": ["./tx3/bindings/*"],
+      "@tx3": ["./tx3/bindings"]
     }
   },
   "watchOptions": {

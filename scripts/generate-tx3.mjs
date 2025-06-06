@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 function generateBindings() {
   // Create output directory if it doesn't exist
-  const outputDir = path.resolve(process.cwd(), 'node_modules/.tx3');
+  const outputDir = path.resolve(process.cwd(), 'tx3/bindings');
   fs.mkdirSync(outputDir, { recursive: true });
   
   // Run trix bindgen from within the tx3 directory

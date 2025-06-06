@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { protocol as simpleTxProtocol } from "@tx3/protocol";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,16 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Loader2, CheckCircle, AlertCircle, Zap } from "lucide-react";
+
+//import { protocol as simpleTxProtocol } from "@tx3/protocol";
+import { Client } from "@tx3/protocol";
+const simpleTxProtocol = new Client({
+  endpoint: process.env.NEXT_PUBLIC_TRP_ENDPOINT as string,
+  headers: {
+    'api_key': process.env.NEXT_PUBLIC_TRP_API_KEY || '',
+  },
+  envArgs: {}, // Optional environment arguments
+});
 
 export default function TestTx3() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +40,6 @@ export default function TestTx3() {
         receiver: bob,
         quantity: 1000000, // 1 ADA in lovelace
       });
-
       setTxResult(tx.tx);
       console.log("Transaction CBOR:", tx);
     } catch (error) {

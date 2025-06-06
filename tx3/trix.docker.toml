@@ -35,4 +35,4 @@ chain = "CardanoMainnet"
 
 [[bindings]]
 plugin = "typescript"
-output_dir = "../node_modules/.tx3"
+output_dir = "./bindings"
