@@ -34,12 +34,17 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Install tx3up and trix
+# Set PATH to include default cargo and tx3 bin directories
+ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
+
+# Install tx3up and trix (using default paths)
 RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
-    source $HOME/.cargo/env && \
-    tx3up
-# Add cargo and tx3 tools to PATH
-ENV PATH="/root/.cargo/bin:/root/.tx3/bin:$PATH"
+    echo "Running tx3up..." && \
+    tx3up && \
+    echo "Checking for trix in $HOME/.tx3/stable/bin..." && \
+    ls -la $HOME/.tx3/stable/bin && \
+    echo "Running 'which trix'..." && \
+    which trix || echo "trix not found in PATH after install (dev stage)"
 
 # Copy node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -72,11 +77,17 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Install tx3up and trix for production builds
+# Set PATH to include default cargo and tx3 bin directories (consistent with dev stage)
+ENV PATH="/root/.cargo/bin:/root/.tx3/stable/bin:$PATH"
+
+# Install tx3up and trix for production builds (using default paths)
 RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tx3-lang/up/releases/latest/download/tx3up-installer.sh | sh && \
-    /root/.tx3/bin/tx3up
-# Add tx3 tools to PATH
-ENV PATH="/root/.tx3/bin:$PATH"
+    echo "Running tx3up..." && \
+    tx3up && \
+    echo "Checking for trix in $HOME/.tx3/stable/bin..." && \
+    ls -la $HOME/.tx3/stable/bin && \
+    echo "Running 'which trix'..." && \
+    which trix || echo "trix not found in PATH after install (runner stage)"
 
 # Copy node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules

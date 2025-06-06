@@ -25,7 +25,7 @@ export default function TestTx3() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">TX3 Test Page</h1>
+      <h1 className="text-2xl font-bold mb-4">TX3 Test Page 1</h1>
       <div className="space-y-4">
         <button 
           onClick={onClick}

@@ -26,7 +26,6 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
-      - /app/tx3/trix.toml
     depends_on:
       - dolos
     networks:
