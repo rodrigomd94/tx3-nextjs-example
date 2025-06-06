@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "tx3:generate": "node scripts/generate-tx3.mjs",
-    "dev": "pnpm tx3:generate && next dev",
+    "watch:tx3": "nodemon --watch tx3 --ext tx3 --exec \"pnpm tx3:generate\"",
+    "dev": "concurrently \"next dev\" \"pnpm watch:tx3\"",
     "build": "pnpm tx3:generate && next build",
     "start": "next start",
     "lint": "next lint"
@@ -23,6 +24,8 @@
     "tx3-trp": "^0.2.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

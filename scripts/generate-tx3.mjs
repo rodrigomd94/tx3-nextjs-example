@@ -52,7 +52,7 @@ function generateBindings() {
   }
   
   console.log(`Attempting to use trix at: ${trixCommand}`);
-  execSync(`${trixCommand} bindgen`, { 
+  execSync(`${trixCommand} bindgen`, {
     stdio: 'inherit',
     cwd: tx3Dir
   });
