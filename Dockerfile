@@ -34,9 +34,6 @@ RUN pnpm install --frozen-lockfile
 # Copy source code and environment file
 COPY . .
 
-# Use Docker-specific trix configuration
-RUN cp tx3/trix.docker.toml tx3/trix.toml
-
 # Create the output directory for tx3 bindings
 RUN mkdir -p node_modules/.tx3
 
@@ -69,9 +66,6 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source code and environment file
 COPY . .
-
-# Use Docker-specific trix configuration
-RUN cp tx3/trix.docker.toml tx3/trix.toml
 
 # Create the output directory for tx3 bindings
 RUN mkdir -p node_modules/.tx3
@@ -107,7 +101,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 # Copy environment file
-COPY --from=builder /app/.env ./.env
+COPY --from=builder /app/.env.docker ./.env
 
 # Copy tx3 configuration and bindings
 COPY --from=builder /app/tx3 ./tx3

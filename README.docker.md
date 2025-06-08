@@ -36,10 +36,6 @@ The Docker setup is configured for live development:
 
 ### Working with Different Environments
 
-**For Docker development:**
-- The containers use `tx3/trix.docker.toml` which points to the `dolos` service
-- This happens automatically when running in Docker
-
 **For local development:**
 - Keep using `tx3/trix.toml` which points to `localhost:8164`
 - You can run dolos locally with: `cd devnet && dolos daemon`
